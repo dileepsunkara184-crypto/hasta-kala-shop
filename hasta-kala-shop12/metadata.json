@@ -1,0 +1,6 @@
+{
+  "name": "Hasta-Kala Shop",
+  "description": "A modern platform for artisans and vendors to track sales, manage inventory, and get AI-powered business insights.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["AI-powered business suggestions", "Sales analytics", "Inventory management"]
+}

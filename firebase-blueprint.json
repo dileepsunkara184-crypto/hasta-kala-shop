@@ -1,0 +1,93 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "profileImageUrl": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Artisan product details",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "quantity": { "type": "number" },
+        "price": { "type": "number" },
+        "imageUrl": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "vendorId": { "type": "string" }
+      },
+      "required": ["name", "quantity", "price", "vendorId"]
+    },
+    "Sale": {
+      "title": "Sale",
+      "description": "Recorded sales transaction",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string" },
+        "productName": { "type": "string" },
+        "quantity": { "type": "number" },
+        "pricePerUnit": { "type": "number" },
+        "totalPrice": { "type": "number" },
+        "soldAt": { "type": "string", "format": "date-time" },
+        "vendorId": { "type": "string" },
+        "isDeleted": { "type": "boolean" }
+      },
+      "required": ["productId", "productName", "quantity", "totalPrice", "soldAt", "vendorId"]
+    },
+    "Suggestion": {
+      "title": "Suggestion",
+      "description": "AI generated business insight",
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "type": { "type": "string", "enum": ["info", "trending", "warning"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "vendorId": { "type": "string" }
+      },
+      "required": ["text", "createdAt", "vendorId"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "Chat log between user and AI assistant",
+      "type": "object",
+      "properties": {
+        "role": { "type": "string", "enum": ["user", "assistant"] },
+        "content": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "vendorId": { "type": "string" }
+      },
+      "required": ["role", "content", "createdAt", "vendorId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Public profile info"
+    },
+    "/users/{userId}/products/{productId}": {
+      "schema": "Product",
+      "description": "Artisan products"
+    },
+    "/users/{userId}/sales/{saleId}": {
+      "schema": "Sale",
+      "description": "Sales history"
+    },
+    "/users/{userId}/suggestions/{suggestionId}": {
+      "schema": "Suggestion",
+      "description": "AI business suggestions"
+    },
+    "/users/{userId}/chat/{messageId}": {
+      "schema": "ChatMessage",
+      "description": "Conversation history"
+    }
+  }
+}

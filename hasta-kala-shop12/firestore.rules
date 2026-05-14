@@ -1,0 +1,111 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 0. Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 3. Path Variable Hardening
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    function incoming() {
+      return request.resource.data;
+    }
+    
+    function existing() {
+      return resource.data;
+    }
+
+    // --- Entity Validations ---
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['name', 'email']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.email is string && data.email.size() <= 200;
+    }
+
+    function isValidProduct(data) {
+      return data.keys().hasAll(['name', 'quantity', 'price', 'vendorId']) &&
+             data.name is string && data.name.size() <= 100 &&
+             data.quantity is number && data.quantity >= 0 &&
+             data.price is number && data.price >= 0 &&
+             data.vendorId == request.auth.uid;
+    }
+
+    function isValidSale(data) {
+      return data.keys().hasAll(['productId', 'productName', 'quantity', 'totalPrice', 'soldAt', 'vendorId']) &&
+             data.productId is string && isValidId(data.productId) &&
+             data.productName is string &&
+             data.quantity is number && data.quantity > 0 &&
+             data.totalPrice is number && data.totalPrice >= 0 &&
+             data.vendorId == request.auth.uid &&
+             data.soldAt is timestamp;
+    }
+
+    function isValidSuggestion(data) {
+      return data.keys().hasAll(['text', 'type', 'createdAt', 'vendorId']) &&
+             data.text is string && data.text.size() <= 1000 &&
+             data.type in ['info', 'trending', 'warning'] &&
+             data.vendorId == request.auth.uid &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidChat(data) {
+      return data.keys().hasAll(['role', 'content', 'createdAt', 'vendorId']) &&
+             data.role in ['user', 'assistant'] &&
+             data.content is string && data.content.size() <= 2000 &&
+             data.vendorId == request.auth.uid &&
+             data.createdAt is timestamp;
+    }
+
+    // --- Matchers ---
+
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(incoming());
+      allow update: if isOwner(userId) && isValidUser(incoming()) && 
+                    incoming().diff(existing()).affectedKeys().hasOnly(['name', 'profileImageUrl', 'updatedAt']);
+
+      match /products/{productId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(productId) && isValidProduct(incoming());
+        allow update: if isOwner(userId) && isValidProduct(incoming()) &&
+                      incoming().diff(existing()).affectedKeys().hasOnly(['name', 'quantity', 'price', 'imageUrl', 'updatedAt']);
+        allow delete: if isOwner(userId);
+      }
+
+      match /sales/{saleId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(saleId) && isValidSale(incoming());
+        allow update: if isOwner(userId) && isValidSale(incoming()) &&
+                      incoming().diff(existing()).affectedKeys().hasOnly(['isDeleted']);
+        allow delete: if isOwner(userId);
+      }
+
+      match /suggestions/{suggestionId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidSuggestion(incoming());
+      }
+
+      match /chat/{messageId} {
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidChat(incoming());
+      }
+    }
+  }
+}
