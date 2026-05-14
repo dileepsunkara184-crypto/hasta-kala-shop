@@ -1,20 +1,58 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Hasta-Kala Shop
 
-# Run and deploy your AI Studio app
+Hasta-Kala Shop is an Android-based business management application developed using Kotlin and modern Android development technologies. The application helps local artisans and small business owners manage products, income tracking, sales history, and business analytics through a simple and user-friendly interface.
 
-This contains everything you need to run your app locally.
+---
 
-View your app in AI Studio: https://ai.studio/apps/ea77e7c4-a806-4d79-afbe-dd06930d05a2
+## Features
 
-## Run Locally
+- User Authentication with OTP and Google Sign-In
+- Dashboard Analytics
+- Income Tracking System
+- Product Recording and Management
+- Sales History Monitoring
+- AI Business Insights
+- Responsive Dark-Themed UI
+- Firebase Integration
+- Real-Time Data Handling
 
-**Prerequisites:**  Node.js
+---
 
+## Technologies Used
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- Kotlin
+- Android Studio
+- Firebase Firestore
+- Jetpack Compose
+- APIs
+- Generative AI Tools
+
+---
+
+## App Screenshots
+
+### Login Screen
+![Login Screen](./images/login.png)
+
+### Dashboard Screen
+![Dashboard](./images/dashboard.png)
+
+### Income Analytics
+![Income](./images/income.png)
+
+### Product Record Screen
+![Record](./images/record.png)
+
+### History Screen
+![History](./images/history.png)
+
+---
+
+## Project Structure
+
+```bash
+app/
+src/
+firebase/
+components/
+screens/
